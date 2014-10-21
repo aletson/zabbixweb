@@ -114,7 +114,7 @@ $(document).ready(function() {
 
 
     var zabbix = new $.zabbix ('http://url_of_your_zabbix_server/zabbix/api_jsonrpc.php', 'your_zabbix_user', 'your_zabbix_password');
-    if(zabbix.getApiVersion() != '2.2.2') {
+    if(zabbix.getApiVersion() >= '2.4.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
 		//Long story short, I only wrote this for 2.2.2. I know the latest version is 2.4, and honestly, this MAY still work, but change it at your own risk
     }

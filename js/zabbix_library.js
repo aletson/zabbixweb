@@ -3,6 +3,7 @@
 //If you fix this up to suck less, please do let me know.
 (function($) {
     $.zabbix = function(url, user, password) {
+	this.apiversion = apiversion;
        this.url = url;
         this.user = user;
         this.password = password;
@@ -20,17 +21,26 @@
         };
 
         this.getApiVersion = function() {
+			var self = this;
             var result = this.call('apiinfo.version', {});
+			self.apiversion = result;
             return result;
         };
 
         this.authenticate = function() {
             this.rpcid = 0;
             var self = this;
-            var authID = this.call('user.authenticate', {
-                'user': this.user,
-                'password' : this.password
-            });
+			if(self.apiversion >= '2.4') {
+				var authID = this.call('user.login', {
+					'user': this.user,
+					'password' : this.password
+				});
+			} else {
+				var authID = this.call('user.authenticate', {
+					'user': this.user,
+					'password' : this.password
+				});
+			}
             self.authid = authID;
         };
 
