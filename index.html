@@ -172,7 +172,7 @@ function filterHostsAndOutput(zabbix) {
                 processorCount = $(this)[0].lastvalue;
             }
             if($(this)[0].name == 'Processor load (1 min average)' || $(this)[0].name == 'Processor load (1 min average per core)' || $(this)[0].name == 'Processor load') {
-                loadTotals += $(this)[0].lastvalue;
+                loadTotals += $(this)[0].lastvalue * 100;
             }
             if($(this)[0].name == 'Agent ping') {
                 thisHostObj.agentPing = $(this)[0].lastvalue;
@@ -315,4 +315,4 @@ function filterHostsAndOutput(zabbix) {
 }
 </script>
 
-<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburguenoi</a></div>
+<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburgueno</a></div>
