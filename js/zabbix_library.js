@@ -3,7 +3,7 @@
 //If you fix this up to suck less, please do let me know.
 (function($) {
     $.zabbix = function(url, user, password) {
-	this.apiversion = apiversion;
+//	this.apiversion = apiversion;
        this.url = url;
         this.user = user;
         this.password = password;
@@ -30,7 +30,7 @@
         this.authenticate = function() {
             this.rpcid = 0;
             var self = this;
-			if(self.apiversion >= '2.4') {
+			if(self.apiversion >= '2.4.3') {
 				var authID = this.call('user.login', {
 					'user': this.user,
 					'password' : this.password
