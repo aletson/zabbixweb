@@ -1,23 +1,22 @@
 <head>
-	<!-- I externally sourced a lot of these files; downloading and hosting these locally shouldn't be an issue either. -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css" media="all" />
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.2.0/darkly/bootstrap.min.css" rel="stylesheet">
-	
-	
+    <script src="js/ext/jquery.min.js"></script>
+    <script src="js/ext/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="css/ext/jquery-ui.min.css" type="text/css" media="all" />
+    <script src="js/ext/bootstrap.min.js"></script>
+    <link href="css/ext/bootstrap.min.css" rel="stylesheet">
+
+    
     <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
     <script src="js/zabbix_library.js"></script>
     <script src="js/jquery.circleprogress.js"></script>
-    <link rel="stylesheet" href="css/stylesheet.css" type="text/css"> <!-- This is to import the Bebas Neue font - which I believe is left over from a previous Bootstrap theme. You may be able to skip this -->
+    <!--<link rel="stylesheet" href="css/stylesheet.css" type="text/css"> This is to import the Bebas Neue font - which I believe is left over from a previous Bootstrap theme. Skipping this doesn't seem to break anything -->
 
     <style>
         .nounderline{text-decoration: none !important}
         body {
             font-family: "BebasNeue";
         }
-		/* This is for the jquery-circleprogress plugin */
+        /* This is for the jquery-circleprogress plugin */
         .circle {
             width: 100px;
             margin: 6px 6px 20px;
@@ -53,18 +52,18 @@
             margin-top: 12px;
         }
 
-		
-		
-		/* Left border for the server cells */
-		
+        
+        
+        /* Left border for the server cells */
+        
         .col-md-3 {
             margin-left: 0;
             padding-left: 19px;
             border-left: 1px solid #555;
         }
 
-		/* This is for the freak-out-and-alert animation. It's done through CSS, but there are also jQuery UI plugins if you prefer those. */
-		
+        /* This is for the freak-out-and-alert animation. It's done through CSS, but there are also jQuery UI plugins if you prefer those. */
+        
         .blink{
             -webkit-animation: blink 700ms infinite alternate;
             -moz-animation: blink 700ms infinite alternate;
@@ -103,8 +102,8 @@
      <div class="content">
         <div class="container-fluid">
 
-		
-		<div id="hosts-list" class="row"></div>
+        
+        <div id="hosts-list" class="row"></div>
 
 
 
@@ -113,10 +112,10 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://url_of_your_zabbix_server/zabbix/api_jsonrpc.php', 'your_zabbix_user', 'your_zabbix_password');
-    if(zabbix.getApiVersion() >= '2.4.1') {
+    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
+    if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
-		//Long story short, I only wrote this for 2.2.2. I know the latest version is 2.4, and honestly, this MAY still work, but change it at your own risk
+        //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
     }
     zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
    
@@ -125,7 +124,7 @@ $(document).ready(function() {
 // Putting the mess that is filterHostsAndOutput into a setInterval would have been cruel and unusual to the maintenance programmer
    
    filterHostsAndOutput(zabbix);
-   setInterval(function() { filterHostsAndOutput(zabbix) }, 18000);
+   setInterval(function() { filterHostsAndOutput(zabbix) }, 54000);
 
 });
 
@@ -144,6 +143,7 @@ function filterHostsAndOutput(zabbix) {
             "lastvalue",
             "units",
             "itemid",
+        "key_",
             "lastclock",
             "value_type",
             "itemid"
@@ -157,53 +157,67 @@ function filterHostsAndOutput(zabbix) {
     var anError = 0;
     $('#hosts-list').empty();
     $.each(hosts, function() { 
-	
-	//I hope you're not opposed to sloppy code, because this is a disaster.
+    
+    //I hope you're not opposed to sloppy code, because this is a disaster.
         var thisHost = $(this); 
         var thisHostObj = thisHost[0];
-        var processorCount = 0;
+        var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
         var loadTotals = 0;
+        thisHostObj.agentPing = '';
         thisHostObj.usedDiskSpacesPcts = new Array;
         thisHostObj.totalDiskSpaces = new Array;
         thisHostObj.usedDiskSpaces = new Array;
+        thisHostObj.totalMem = 0;
+        thisHostObj.usedMem = 0;
+        thisHostObj.numProcesses = 0;
         thisHostObj.networkTraffic = 0;
         $.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
-            if($(this)[0].name == 'Processor load (1 min average)' || $(this)[0].name == 'Processor load (1 min average per core)') {
-                processorCount++;
-                loadTotals += $(this)[0].lastvalue;
+            switch ($(this)[0].key_) {
+                case 'system.cpu.num':
+                    processorCount = $(this)[0].lastvalue;
+                    break;
+                case 'system.cpu.load':
+                    loadTotals += $(this)[0].lastvalue;
+                    break;
+                case 'agent.ping':
+                    thisHostObj.agentPing = $(this)[0].lastvalue;
+                    break;
+                case 'vm.memory.size[total]':
+                   thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
+                    break;
+                case 'vm.memory.size[free]':
+                    thisHostObj.usedMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached
+                    break;
+                case 'vm.memory.size[cached]':
+                    thisHostObj.usedMem += $(this)[0].lastvalue / 1073741824;
+                    break;
+                case 'proc.num[]':
+                    thisHostObj.numProcesses = $(this)[0].lastvalue;
+                    break;
+                //as seen in http://stackoverflow.com/a/22099079 for case substring matching. There may be a better way to do this...
+                case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
+                    switch ($(this)[0].key_) {
+                        case ( ($(this)[0].key_.match(/,pfree/) )? $(this)[0].key_: undefined ):
+                            thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue);
+                            break;
+                        case ( ($(this)[0].key_.match(/,used/) )? $(this)[0].key_: undefined ):
+                            thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+                            break;
+                        case ( ($(this)[0].key_.match(/,total/) )? $(this)[0].key_: undefined ):
+                            thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+                            break;
+                       }
+                    break;
+                case 'net.if.in[eth0,bytes]': //FIXME: assumes eth0! (but then again, so did Zabbix prior to LLD)
+                    thisHostObj.networkTraffic += ($(this)[0].lastvalue / 1024) / 8; // KBps
+                    break;
+                case 'net.tcp.service[http]':
+                    if($(this)[0].lastvalue == 0) {
+                        thisHostObj.error = 1;
+                        thisHostObj.errorText = 'Web service is down (httpd or IIS)';
+                    }
+                    break;
             }
-            if($(this)[0].name == 'Agent ping') {
-                thisHostObj.agentPing = $(this)[0].lastvalue;
-            }
-            if($(this)[0].name == 'Free memory') {
-                thisHostObj.freeMem = $(this)[0].lastvalue / 1024 / 1024 / 1024; //MB
-            }
-            if($(this)[0].name == 'Total memory') {
-                thisHostObj.totalMem = $(this)[0].lastvalue / 1024 / 1024 / 1024;
-            }
-            if($(this)[0].name == 'Available memory') {
-                thisHostObj.freeMem = $(this)[0].lastvalue / 1024 / 1024 / 1024;
-            }
-            if($(this)[0].name == 'Number of processes') {
-                thisHostObj.numProcesses = $(this)[0].lastvalue;
-            }
-            if($(this)[0].name == 'Free disk space on $1 (percentage)') {
-                thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue); //GB
-            }
-            if($(this)[0].name == 'Used disk space on $1') {
-                thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1024 / 1024 / 1024));
-            }
-            if($(this)[0].name == 'Total disk space on $1') {
-                thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1024 / 1024 / 1024));
-            }
-            if($(this)[0].name == 'Incoming network traffic on $1') {
-                thisHostObj.networkTraffic += ($(this)[0].lastvalue / 1024) / 8; // KBps
-            }
-            if($(this)[0].name == 'HTTP service is running' && $(this)[0].lastvalue == 0) {
-                thisHostObj.error = 1;
-                thisHostObj.errorText = 'Web service is down (httpd or IIS)';
-            }
-
         });
 
         if (thisHostObj.error != '' && thisHostObj.error != 1) {
@@ -230,19 +244,23 @@ function filterHostsAndOutput(zabbix) {
                 thisHostObj.os = 'CentOS 7';
             } else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
                 thisHostObj.os = 'CentOS 6.5';
-				//Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
+                //Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
             } else {
                 thisHostObj.os = thisHost[0].inventory.os;
             }
         } else if (thisHostObj.name == 'Zabbix server') {
-		//We're using the Zabbix appliance which is built on SuSE Linux.
-            thisHostObj.os = 'OpenSUSE Linux'
+        //We're using the Zabbix appliance which is built on SuSE Linux.
+            thisHostObj.os = 'OpenSUSE Linux';
+        } else if (thisHostObj.inventory.os_full) {
+                if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
+            thisHostObj.os = 'Linux';
+        }
         } else {
             thisHostObj.os = 'OS Unavailable';
         }
-		//Math
+        //Math
         thisHostObj.avgCpuLoad = loadTotals / processorCount;
-        thisHostObj.memPct = (thisHostObj.totalMem - thisHostObj.freeMem) / thisHostObj.totalMem;
+        thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
         var disks = new String;
         var diskTopUsage = 0;
         $.each(thisHostObj.totalDiskSpaces, function(key, value) {
@@ -260,12 +278,12 @@ function filterHostsAndOutput(zabbix) {
             diskUsageClass = 'panel-default';
         }
         if(!thisHostObj.error) {
-			//Yes, this should have been done with a series of appends. Yes, I am bad at jQuery.
+            //Yes, this should have been done with a series of appends. Yes, I am bad at jQuery.
             $('#hosts-list').append('<div class="col-md-3" id="' + thisHostObj.hostid +
             '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
-            thisHostObj.avgCpuLoad + '"><strong></strong><span>CPU: ' + thisHostObj.numProcesses +
-            ' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
-            '"><strong></strong><span>MEM: ' + ((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(1)) + 'G / ' +
+            thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
+            ' PROCESSES</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
+            '"><strong></strong><span>MEM: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
             thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
             thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
             'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
@@ -312,4 +330,4 @@ function filterHostsAndOutput(zabbix) {
 }
 </script>
 
-<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a></div>
+<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburgueno</a></div>

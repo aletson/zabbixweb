@@ -3,8 +3,8 @@
 //If you fix this up to suck less, please do let me know.
 (function($) {
     $.zabbix = function(url, user, password) {
-	this.apiversion = apiversion;
-       this.url = url;
+	//this.apiversion = apiversion; leaving this uncommented aborts with an error
+	this.url = url;
         this.user = user;
         this.password = password;
         this.rpcid = 0;
