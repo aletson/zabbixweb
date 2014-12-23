@@ -3,8 +3,8 @@
 //If you fix this up to suck less, please do let me know.
 (function($) {
     $.zabbix = function(url, user, password) {
-//	this.apiversion = apiversion;
-       this.url = url;
+	//this.apiversion = apiversion; leaving this uncommented aborts with an error
+	this.url = url;
         this.user = user;
         this.password = password;
         this.rpcid = 0;
@@ -30,7 +30,7 @@
         this.authenticate = function() {
             this.rpcid = 0;
             var self = this;
-			if(self.apiversion >= '2.4.3') {
+			if(self.apiversion >= '2.4') {
 				var authID = this.call('user.login', {
 					'user': this.user,
 					'password' : this.password
