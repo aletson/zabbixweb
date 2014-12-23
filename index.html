@@ -112,7 +112,7 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
+    var zabbix = new $.zabbix ('http://10.1.208.25/zabbix/api_jsonrpc.php', 'Admin', 'zabbix');
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -157,8 +157,6 @@ function filterHostsAndOutput(zabbix) {
     var anError = 0;
     $('#hosts-list').empty();
     $.each(hosts, function() { 
-    
-    //I hope you're not opposed to sloppy code, because this is a disaster.
         var thisHost = $(this); 
         var thisHostObj = thisHost[0];
         var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
@@ -208,8 +206,9 @@ function filterHostsAndOutput(zabbix) {
                             break;
                        }
                     break;
-                case 'net.if.in[eth0,bytes]': //FIXME: assumes eth0! (but then again, so did Zabbix prior to LLD)
-                    thisHostObj.networkTraffic += ($(this)[0].lastvalue / 1024) / 8; // KBps
+					
+				case ( ($(this)[0].key_.match(/net.if.in/) || $(this)[0].key_.match(/net.if.out/) ) ? $(this)[0].key_ : undefined ): //FIXME: filter by network interface
+                    thisHostObj.networkTraffic += $(this)[0].lastvalue / 8192; // KBps
                     break;
                 case 'net.tcp.service[http]':
                     if($(this)[0].lastvalue == 0) {
