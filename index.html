@@ -166,7 +166,7 @@ function filterHostsAndOutput(zabbix) {
         thisHostObj.totalDiskSpaces = new Array;
         thisHostObj.usedDiskSpaces = new Array;
         thisHostObj.totalMem = 0;
-        thisHostObj.usedMem = 0;
+        thisHostObj.freeMem = 0;
         thisHostObj.numProcesses = 0;
         thisHostObj.networkTraffic = 0;
         $.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
@@ -184,10 +184,10 @@ function filterHostsAndOutput(zabbix) {
                    thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
                     break;
                 case 'vm.memory.size[free]':
-                    thisHostObj.usedMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached
+                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached
                     break;
                 case 'vm.memory.size[cached]':
-                    thisHostObj.usedMem += $(this)[0].lastvalue / 1073741824;
+                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
                     break;
                 case 'proc.num[]':
                     thisHostObj.numProcesses = $(this)[0].lastvalue;
@@ -259,6 +259,7 @@ function filterHostsAndOutput(zabbix) {
             thisHostObj.os = 'OS Unavailable';
         }
         //Math
+		thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
         thisHostObj.avgCpuLoad = loadTotals / processorCount;
         thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
         var disks = new String;
@@ -283,7 +284,7 @@ function filterHostsAndOutput(zabbix) {
             '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
             thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
             ' PROCESSES</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
-            '"><strong></strong><span>MEM: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
+            '"><strong></strong><span>USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
             thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
             thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
             'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
