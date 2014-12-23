@@ -112,7 +112,7 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://10.1.208.25/zabbix/api_jsonrpc.php', 'Admin', 'zabbix');
+    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -231,7 +231,8 @@ function filterHostsAndOutput(zabbix) {
         }
         if(thisHostObj.errorText && thisHostObj.errorText.indexOf('timed out') > -1) {
             thisHostObj.errorText = 'Connection timed out - this is where you panic';
-        }
+			        anError = 1;
+		}
         if(thisHostObj.inventory.os) {
             if(thisHostObj.inventory.os.indexOf('Windows Server 2008 R2') > -1) {
                 thisHostObj.os = 'Win Server 2008 R2';
@@ -291,7 +292,6 @@ function filterHostsAndOutput(zabbix) {
         } else {
             $('#hosts-list').append('<div class="col-md-3 blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
-         anError = 1;
         }
 
 
