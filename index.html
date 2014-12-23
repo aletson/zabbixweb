@@ -112,7 +112,7 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://10.1.208.25/zabbix/api_jsonrpc.php', 'Admin', 'zabbix');
+    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -143,7 +143,7 @@ function filterHostsAndOutput(zabbix) {
             "lastvalue",
             "units",
             "itemid",
-        "key_",
+            "key_",
             "lastclock",
             "value_type",
             "itemid"
@@ -171,10 +171,10 @@ function filterHostsAndOutput(zabbix) {
         thisHostObj.networkTraffic = 0;
         $.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
             switch ($(this)[0].key_) {
-                case 'system.cpu.num':
+                case 'system.cpu.num': //You may have to add this to your Zabbix templates.
                     processorCount = $(this)[0].lastvalue;
                     break;
-                case 'system.cpu.load':
+                case 'system.cpu.load': //You may have to add this to your Zabbix templates (as float)
                     loadTotals += $(this)[0].lastvalue;
                     break;
                 case 'agent.ping':
@@ -184,13 +184,14 @@ function filterHostsAndOutput(zabbix) {
                    thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
                     break;
                 case 'vm.memory.size[free]':
-                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached
+                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached+inactive on linux, free on Windows
                     break;
                 case 'vm.memory.size[cached]':
                     thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
                     break;
-				case 'vm.memory.size[inactive]':
-					thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
+                case 'vm.memory.size[inactive]':
+                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
+                    break;
                 case 'proc.num[]':
                     thisHostObj.numProcesses = $(this)[0].lastvalue;
                     break;
@@ -208,8 +209,8 @@ function filterHostsAndOutput(zabbix) {
                             break;
                        }
                     break;
-					
-				case ( ($(this)[0].key_.match(/net.if.in/) || $(this)[0].key_.match(/net.if.out/) ) ? $(this)[0].key_ : undefined ): //FIXME: filter by network interface
+                    
+                case ( ($(this)[0].key_.match(/net.if.in/) || $(this)[0].key_.match(/net.if.out/) ) ? $(this)[0].key_ : undefined ): //FIXME: filter by network interface
                     thisHostObj.networkTraffic += $(this)[0].lastvalue / 8192; // KBps
                     break;
                 case 'net.tcp.service[http]':
@@ -232,9 +233,9 @@ function filterHostsAndOutput(zabbix) {
             thisHostObj.errorText = 'Connection refused - check agent settings';
         }
         if(thisHostObj.errorText && thisHostObj.errorText.indexOf('timed out') > -1) {
-            thisHostObj.errorText = 'Connection timed out - this is where you panic';
-			        anError = 1;
-		}
+            thisHostObj.errorText = 'Connection timed out - SERVER MAY BE DOWN';
+            anError = 1;
+        }
         if(thisHostObj.inventory.os) {
             if(thisHostObj.inventory.os.indexOf('Windows Server 2008 R2') > -1) {
                 thisHostObj.os = 'Win Server 2008 R2';
@@ -248,11 +249,9 @@ function filterHostsAndOutput(zabbix) {
                 thisHostObj.os = 'CentOS 6.5';
                 //Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
             } else {
+                //Return the unfriendly string if no patterns were matched
                 thisHostObj.os = thisHost[0].inventory.os;
             }
-        } else if (thisHostObj.name == 'Zabbix server') {
-        //We're using the Zabbix appliance which is built on SuSE Linux.
-            thisHostObj.os = 'OpenSUSE Linux';
         } else if (thisHostObj.inventory.os_full) {
                 if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
             thisHostObj.os = 'Linux';
@@ -261,7 +260,7 @@ function filterHostsAndOutput(zabbix) {
             thisHostObj.os = 'OS Unavailable';
         }
         //Math
-		thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
+        thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
         thisHostObj.avgCpuLoad = loadTotals / processorCount;
         thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
         var disks = new String;
@@ -281,11 +280,11 @@ function filterHostsAndOutput(zabbix) {
             diskUsageClass = 'panel-default';
         }
         if(!thisHostObj.error) {
-            //Yes, this should have been done with a series of appends. Yes, I am bad at jQuery.
+            //Build the server entry.
             $('#hosts-list').append('<div class="col-md-3" id="' + thisHostObj.hostid +
             '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
             thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
-            ' PROCESSES</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
+            ' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
             '"><strong></strong><span>USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
             thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
             thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
@@ -301,6 +300,7 @@ function filterHostsAndOutput(zabbix) {
 
 
     });
+    //Play the tornado siren if a server is unreachable
     if(anError === 1) { //We do this outside the for loop because we only want the sound to play...once.
         var times = 3;
         function repeat() {
@@ -315,8 +315,6 @@ function filterHostsAndOutput(zabbix) {
         var loop = setInterval(repeat, 6000);
         repeat();
     }
-
-    //Ok, now get alerts. If there is an alert display it at the top of the screen and flash the relevant host (by hostid). Klaxon that shit.
 
     $('.circle').each(function() {
         $(this).circleProgress({
