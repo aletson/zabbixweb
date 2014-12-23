@@ -112,7 +112,7 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
+    var zabbix = new $.zabbix ('http://10.1.208.25/zabbix/api_jsonrpc.php', 'Admin', 'zabbix');
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -189,6 +189,8 @@ function filterHostsAndOutput(zabbix) {
                 case 'vm.memory.size[cached]':
                     thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
                     break;
+				case 'vm.memory.size[inactive]':
+					thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
                 case 'proc.num[]':
                     thisHostObj.numProcesses = $(this)[0].lastvalue;
                     break;
