@@ -101,12 +101,34 @@
 <body>
      <div class="content">
         <div class="container-fluid">
-
+<div class="row"><div class="col-md-12"><span style="float: right; font-size: 9px;"><a data-toggle="modal" data-target="#settings-modal">settings</a></span></div>
         
         <div id="hosts-list" class="row"></div>
 
+        <div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburgueno</a></div>
 
-
+		<div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		    <div class="modal-dialog">
+			    <div class="modal-content">
+				    <div class="modal-header">
+					    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="Settings">Settings</h4>
+					</div>
+					<div class="modal-body">
+					    <label for="network-dropdown"><input type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label>
+						<label for="disks-dropdown"><input type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label>
+						<label for="show-meters"><input type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label>
+						<label for="view-list"><input type="radio" name="view-select" id="view-list" value="list" />List view</label>
+						<label for="view-grid"><input type="radio" name="view-select" id="view-grid" value="grid" />Grid view</label>
+					</div>
+					<div class="modal-footer">
+					    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="save-changes">Save Preferences</button>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
 <script>
 
 $(document).ready(function() {
@@ -330,4 +352,3 @@ function filterHostsAndOutput(zabbix) {
 }
 </script>
 
-<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburgueno</a></div>
