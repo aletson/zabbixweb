@@ -168,6 +168,7 @@ function filterHostsAndOutput(zabbix) {
             "key_",
             "lastclock",
             "value_type",
+            "status",
             "itemid"
         ],
         "output": "extend",
@@ -237,7 +238,13 @@ function filterHostsAndOutput(zabbix) {
                     thisHostObj.networkTraffic += $(this)[0].lastvalue / 8192; // KBps
                     break;
                 case 'net.tcp.service[http]':
-                    if($(this)[0].lastvalue == 0) {
+                    //Shame we need a second API call, but using 'selectTriggers' in the host.get method doesn't return anything we can use to check the status of the trigger
+                    //See https://www.zabbix.com/forum/showthread.php?t=24137
+                    var webtrigger = zabbix.call('trigger.get', {
+                        "host": thisHostObj.name,
+                        "itemids": $(this)[0].itemid,
+                        });
+                    if(webtrigger[0].status == 0 && webtrigger[0].value == 1) {
                         thisHostObj.error = 1;
                         thisHostObj.errorText = 'Web service is down (httpd or IIS)';
                     }
