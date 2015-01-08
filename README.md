@@ -30,6 +30,6 @@ Installation
 
     vm.memory.size[inactive] - set as decimal
 
-*Open a web browser page to http://yourzabbixserver/zabbixweb-0.1-release/index.html
+* Open a web browser page to http://yourzabbixserver/zabbixweb-0.1-release/index.html
 
-*Enjoy!
+* Enjoy!
