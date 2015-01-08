@@ -9,15 +9,23 @@ Installation is super easy:
     It is possible to host this dashboard on an external server, but some work is required to do so. This will be outlined in the wiki.
 
 *Edit index.html and change the line `var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');` as follows:
+
     Change http://zabbix.org to the IP or DNS name of your Zabbix server (but leave the `/zabbix/api_jsonrpc.php`)
+    
     Change `guest` and the empty string to the username and password (respectively) of a Zabbix user that the GUI will use to access the data.
 
 *You may have to add an item for each of these keys to your host Templates:
+
     system.cpu.num (Decimal)
+    
     system.cpu.load (float)
+    
     vm.memory.size[total] (Decimal)
+    
     vm.memory.size[free] (Decimal)
+    
     vm.memory.size[cached] (Decimal)
+    
     vm.memory.size[inactive] (Decimal)
 
 *Open a web browser page to http://yourzabbixserver/zabbixweb-0.1-release/index.html
