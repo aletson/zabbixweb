@@ -14,7 +14,7 @@ Installation
 
   Change http://zabbix.org to the IP or DNS name of your Zabbix server (but leave the `/zabbix/api_jsonrpc.php`)
 
-  Change `guest` and the empty string to the username and password (respectively) of a Zabbix user that the GUI will use to access the data.
+  Change `guest` and the empty string to the username and password (respectively) of a Zabbix user that the GUI will use to access the data. Ideally this should be a Zabbix user with Read-only access to the Host Groups you want to show. **Don't use your own user!** We make no effort to hide the password...
 
 * You may have to add an item for each of these keys to your host Templates:
 
