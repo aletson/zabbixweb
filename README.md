@@ -1,8 +1,12 @@
+zabbixweb
+=========
+
 A frontend monitoring board for Zabbix server.
 
 This is a GUI dashboard for Zabbix hosts. It will list the hostname, OS, Load ÷ CPU cores, number of processes, memory usage, ping, traffic on the default interface, and disk usage.
 
-Installation is super easy:
+Installation
+------------
 
 * Download and extract the files on your Zabbix server, somewhere web-accessible. It is possible to host this dashboard on an external server, but some work is required to do so. This will be outlined in the wiki.
 
