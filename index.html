@@ -295,7 +295,6 @@ function filterHostsAndOutput(zabbix) {
                 //Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
             } else if (thisHostObj.inventory.os.indexOf('Linux') > -1) {
             	thisHostObj.os = 'Linux';
-            }
             } else {
                 //Return the unfriendly string if no patterns were matched
                 thisHostObj.os = thisHost[0].inventory.os;
