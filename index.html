@@ -134,7 +134,7 @@
 $(document).ready(function() {
 
 
-    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', '');
+    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -170,7 +170,8 @@ function filterHostsAndOutput(zabbix) {
             "value_type",
             "status",
             "itemid"
-        ],
+        ],//Next line is thanks to eburgueno, disabled unless you want to use it
+//        "groupids": "11", //Only display hosts in this groupID #.  You should create a new one with all the hosts you want, and templates
         "output": "extend",
         "search" : {"host" : ""},
 	"sortfield" : "host",
@@ -204,7 +205,7 @@ function filterHostsAndOutput(zabbix) {
                 case 'agent.ping':
                     thisHostObj.agentPing = $(this)[0].lastvalue;
                     break;
-                case 'vm.memory.size[total]':
+                case 'vm.memory.size[total]': //You may have to add these as well
                    thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
                     break;
                 case 'vm.memory.size[free]':
@@ -277,12 +278,26 @@ function filterHostsAndOutput(zabbix) {
                 thisHostObj.os = 'CentOS 7';
             } else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
                 thisHostObj.os = 'CentOS 6.5';
+            } else if (thisHostObj.inventory.os.indexOf('Ubuntu') > -1) {//Ubuntu's uname -a does not give us the OS version
+		thisHostObj.os = 'Ubuntu';
+            } else if (thisHostObj.inventory.os.indexOf('Version 10') > -1) { //Does this conflict with any other OS?
+		thisHostObj.os = 'Mac OS 10.6';
+            } else if (thisHostObj.inventory.os.indexOf('Version 11') > -1) {
+            	thisHostObj.os = 'Mac OS 10.7';
+            } else if (thisHostObj.inventory.os.indexOf('Version 12') > -1) {
+		thisHostObj.os = 'Mac OS 10.8';
+            } else if (thisHostObj.inventory.os.indexOf('Version 13') > -1) {
+		thisHostObj.os = 'Mac OS 10.9';
+            } else if (thisHostObj.inventory.os.indexOf('Version 14') > -1) {
+		thisHostObj.os = 'Mac OS 10.10';
+            } else if (thisHostObj.inventory.os.indexOf('Version 15') > -1) {
+		thisHostObj.os = 'Mac OS 10.11'; //Even though it doesn't exist yet....
                 //Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
             } else {
                 //Return the unfriendly string if no patterns were matched
                 thisHostObj.os = thisHost[0].inventory.os;
             }
-        } else if (thisHostObj.inventory.os_full) {
+        } else if (thisHostObj.inventory.os_full) { //Per eburgueno, his install uses an item for Hostname to populate OS (Full Details) in Inventory
                 if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
             thisHostObj.os = 'Linux';
         }
