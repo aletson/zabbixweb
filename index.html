@@ -121,13 +121,13 @@
 						<h4 class="modal-title" id="Settings">Settings</h4>
 					</div>
 					<div class="modal-body">
-					    <label for="network-dropdown"><input type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label><br/>
-						<label for="disks-dropdown"><input type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label><br/>
-						<label for="show-meters"><input type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label><br/>
-						<label for="view-list"><input type="radio" class="view-select" name="view-select" id="view-select-list" value="list" />List view</label>
-						<label for="view-grid"><input type="radio" class="view-select" name="view-select" id="view-select-grid" value="grid" checked />Grid view</label><br/>
-						<label for="view-4"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-4" value="3">4 columns</label>
-						<label for="view-6"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-6" value="2">6 columns</label><br/>
+					    <label for="network-dropdown"><input class="settings" type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label><br/>
+						<label for="disks-dropdown"><input class="settings" type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label><br/>
+						<label for="show-meters"><input class="settings" type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label><br/>
+						<label for="view-list"><input type="radio" class="settings view-select" name="view-select" id="view-select-list" value="list" />List view</label>
+						<label for="view-grid"><input type="radio" class="settings view-select" name="view-select" id="view-select-grid" value="grid" checked />Grid view</label><br/>
+						<label for="view-4"><input type="radio" class="settings view-grid-cols" name="view-grid-cols" id="view-grid-cols-4" value="3">4 columns</label>
+						<label for="view-6"><input type="radio" class="settings view-grid-cols" name="view-grid-cols" id="view-grid-cols-6" value="2">6 columns</label><br/>
 						
 					</div>
 					<div class="modal-footer">
@@ -148,8 +148,8 @@ $(document).ready(function() {
         $('.view-grid-cols').attr('checked', false);
         $('.view-grid-cols').attr('disabled', true);
     });
-    $('.view-grid-cols').click(function() {
-    	filterHostsAndOutput(hosts);
+    $('.settings').click(function() {
+    	filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
     });
     
     var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
