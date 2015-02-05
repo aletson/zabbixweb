@@ -121,13 +121,13 @@
 						<h4 class="modal-title" id="Settings">Settings</h4>
 					</div>
 					<div class="modal-body">
-					    <label for="network-dropdown"><input type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label>
-						<label for="disks-dropdown"><input type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label>
-						<label for="show-meters"><input type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label>
+					    <label for="network-dropdown"><input type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label><br/>
+						<label for="disks-dropdown"><input type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label><br/>
+						<label for="show-meters"><input type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label><br/>
 						<label for="view-list"><input type="radio" class="view-select" name="view-select" id="view-select-list" value="list" />List view</label>
 						<label for="view-grid"><input type="radio" class="view-select" name="view-select" id="view-select-grid" value="grid" checked />Grid view</label><br/>
 						<label for="view-4"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-4" value="3">4 columns</label>
-						<label for="view-6"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-6" value="2">6 columns</label>
+						<label for="view-6"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-6" value="2">6 columns</label><br/>
 						
 					</div>
 					<div class="modal-footer">
@@ -142,12 +142,15 @@
 
 $(document).ready(function() {
 
-    $('#view-grid').select(function() {
+    $('#view-grid').click(function() {
         $('.view-grid-cols').attr('disabled', false);
     });
-    $('#view-list').select(function() {
+    $('#view-list').click(function() {
         $('.view-grid-cols').attr('checked', false);
         $('.view-grid-cols').attr('disabled', true);
+    });
+    $('.view-grid-cols').click(function() {
+    	filterHostsAndOutput(hosts);
     });
     
     var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
@@ -160,21 +163,16 @@ $(document).ready(function() {
    
    
 // Putting the mess that is filterHostsAndOutput into a setInterval would have been cruel and unusual to the maintenance programmer
-   
-   filterHostsAndOutput(zabbix);
-   setInterval(function() { filterHostsAndOutput(zabbix) }, 54000);
+   var hosts = getHostsFromZabbix(zabbix);
+   filterHostsAndOutput(hosts);
+   setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 54000);
 
 });
 
 
 
-
-
-
-//I apologize for everything.
-
-function filterHostsAndOutput(zabbix) {
-    var hosts = zabbix.call('host.get', {
+function getHostsFromZabbix(zabbix) {
+	return zabbix.call('host.get', {
         "selectInventory": true,
         "selectItems": [
             "name",
@@ -194,7 +192,12 @@ function filterHostsAndOutput(zabbix) {
         "expandDescription": 1,
         "expandData": 1
     });
+}
 
+
+//I apologize for everything.
+
+function filterHostsAndOutput(hosts) {
     var anError = 0;
     $('#hosts-list').empty();
     $.each(hosts, function() { 
@@ -342,9 +345,9 @@ function filterHostsAndOutput(zabbix) {
         } else {
             diskUsageClass = 'panel-default';
         }
-	if($("input:radio[name=view-grid-cols]").val()) {
-            columnWidth = $('input:radio[name=view-grid-cols]').val(); //If a value has been selected for the grid view
-        } else if ($('input:radio[name=view-select]').val() == 'grid') {
+	if($("input:radio[name=view-grid-cols]:checked").val()) {
+            columnWidth = $('input:radio[name=view-grid-cols]:checked').val(); //If a value has been selected for the grid view
+        } else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
             columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
         }
         if(!thisHostObj.error) {
