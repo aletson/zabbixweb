@@ -118,8 +118,11 @@
 					    <label for="network-dropdown"><input type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label>
 						<label for="disks-dropdown"><input type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label>
 						<label for="show-meters"><input type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label>
-						<label for="view-list"><input type="radio" name="view-select" id="view-list" value="list" />List view</label>
-						<label for="view-grid"><input type="radio" name="view-select" id="view-grid" value="grid" />Grid view</label>
+						<label for="view-list"><input type="radio" class="view-select" name="view-select" id="view-select-list" value="list" />List view</label>
+						<label for="view-grid"><input type="radio" class="view-select" name="view-select" id="view-select-grid" value="grid" />Grid view</label><br/>
+						<label for="view-4"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-4" value="3">4 columns</label>
+						<label for="view-6"><input type="radio" class="view-grid-cols" name="view-grid-cols" id="view-grid-cols-6" value="2">6 columns</label>
+						
 					</div>
 					<div class="modal-footer">
 					    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -133,7 +136,14 @@
 
 $(document).ready(function() {
 
-
+    $('#view-grid').select(function() {
+        $('.view-grid-cols').attr('disabled', false);
+    });
+    $('#view-list').select(function() {
+        $('.view-grid-cols').attr('checked', false);
+        $('.view-grid-cols').attr('disabled', true);
+    });
+    
     var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
@@ -327,8 +337,13 @@ function filterHostsAndOutput(zabbix) {
             diskUsageClass = 'panel-default';
         }
         if(!thisHostObj.error) {
+            if($('.view-grid-cols :selected').val()) {
+                columnWidth = $('.view-grid-cols :selected').val(); //If a value has been selected for the grid view
+            } else if $('.view-select :selected').val() == 'grid') {
+                columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
+            }
             //Build the server entry.
-            $('#hosts-list').append('<div class="col-md-3" id="' + thisHostObj.hostid +
+            $('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
             '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
             thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
             ' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
@@ -339,7 +354,7 @@ function filterHostsAndOutput(zabbix) {
             '</div></div></div></div></span></div></div></div>');
             $('#ohgod').empty();
         } else {
-            $('#hosts-list').append('<div class="col-md-3 blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
+            $('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
         }
 
