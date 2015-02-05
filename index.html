@@ -338,7 +338,7 @@ function filterHostsAndOutput(zabbix) {
         }
 	if($('.view-grid-cols :selected').val()) {
             columnWidth = $('.view-grid-cols :selected').val(); //If a value has been selected for the grid view
-        } else if $('.view-select :selected').val() == 'grid') {
+        } else if ($('.view-select :selected').val() == 'grid') {
             columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
         }
         if(!thisHostObj.error) {
