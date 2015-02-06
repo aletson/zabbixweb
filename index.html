@@ -111,7 +111,7 @@
         
         <div id="hosts-list" class="row"></div>
 
-        <div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="https://github.com/eburgueno">@eburgueno</a></div>
+        <div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="http://ebur.co">Eric Burgueño</a></div>
 
 		<div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
 		    <div class="modal-dialog">
@@ -138,7 +138,7 @@
 		</div>
 </body>
 <script>
-
+var zabbix; //I guess this has to be a global object
 $(document).ready(function() {
 
     $('#view-select-grid').click(function() {
@@ -152,7 +152,7 @@ $(document).ready(function() {
     	filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
     });
     
-    var zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
+    zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
     if(zabbix.getApiVersion() >= '2.5.1') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
