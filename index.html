@@ -4,13 +4,9 @@
     <link rel="stylesheet" href="css/ext/jquery-ui.min.css" type="text/css" media="all" />
     <script src="js/ext/bootstrap.min.js"></script>
     <link href="css/ext/bootstrap.min.css" rel="stylesheet">
-
-    
     <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
     <script src="js/zabbix_library.js"></script>
     <script src="js/jquery.circleprogress.js"></script>
-    <!--<link rel="stylesheet" href="css/stylesheet.css" type="text/css"> This is to import the Bebas Neue font - which I believe is left over from a previous Bootstrap theme. Skipping this doesn't seem to break anything -->
-
     <style>
         .nounderline{text-decoration: none !important}
         body {
@@ -62,7 +58,7 @@
             border-left: 1px solid #555;
         }
 
-        /* This is for the freak-out-and-alert animation. It's done through CSS, but there are also jQuery UI plugins if you prefer those. */
+        /* CSS animation for server alerts */
         
         .blink{
             -webkit-animation: blink 700ms infinite alternate;
@@ -108,11 +104,13 @@
                     </span>
                 </div>
             </div>
-        
+            
+        <!-- Populated by API call -->
         <div id="hosts-list" class="row"></div>
 
         <div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="http://ebur.co">Eric Burgueño</a></div>
 
+		<!-- Settings modal -->
 		<div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
 		    <div class="modal-dialog">
 			    <div class="modal-content">
@@ -137,8 +135,12 @@
 			</div>
 		</div>
 </body>
+
+
+
+
 <script>
-var zabbix; //I guess this has to be a global object
+var zabbix;
 $(document).ready(function() {
 
     $('#view-select-grid').click(function() {
@@ -158,12 +160,10 @@ $(document).ready(function() {
         //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
     }
     zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
-   
-   
-   
-// Putting the mess that is filterHostsAndOutput into a setInterval would have been cruel and unusual to the maintenance programmer
    var hosts = getHostsFromZabbix(zabbix);
    filterHostsAndOutput(hosts);
+   
+   //TODO fix this. If the next API call starts before the last one finishes, the dashboard explodes and it's not pretty.
    setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 54000);
 
 });
@@ -193,11 +193,10 @@ function getHostsFromZabbix(zabbix) {
     });
 }
 
-
-//I apologize for everything.
-
+//This process takes the hosts retrieved from the API call and creates the view on the webpage.
 function filterHostsAndOutput(hosts) {
     var anError = 0;
+    var hostsCount = 0;
     $('#hosts-list').empty();
     $.each(hosts, function() { 
         var thisHost = $(this); 
@@ -344,11 +343,16 @@ function filterHostsAndOutput(hosts) {
         } else {
             diskUsageClass = 'panel-default';
         }
+        //TODO Move this outside of the loop; it should only be set once.
+        
 	if($("input:radio[name=view-grid-cols]:checked").val()) {
             columnWidth = $('input:radio[name=view-grid-cols]:checked').val(); //If a value has been selected for the grid view
         } else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
             columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
         }
+        //TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
+        hostsCount++;
+        
         if(!thisHostObj.error) {
             //Build the server entry.
             $('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
@@ -360,7 +364,6 @@ function filterHostsAndOutput(hosts) {
             thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
             'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
             '</div></div></div></div></span></div></div></div>');
-            $('#ohgod').empty();
         } else {
             $('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
