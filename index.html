@@ -262,7 +262,7 @@ function filterHostsAndOutput(hosts) {
                         "host": thisHostObj.name,
                         "itemids": $(this)[0].itemid,
                         });
-                    if(webtrigger[0].status == 0 && webtrigger[0].value == 1) {
+                    if(webtrigger[0] && webtrigger[0].status == 0 && webtrigger[0].value == 1) {
                         thisHostObj.error = 1;
                         thisHostObj.errorText = 'Web service is down (httpd or IIS)';
                     }
