@@ -348,7 +348,7 @@ function filterHostsAndOutput(hosts) {
 		thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
 		var disks = new String;
 		var diskTopUsage = 0;
-		$.each(thisHostObj.Disks, function(thisDisk) {
+		$.each(thisHostObj.Disks, function(i, thisDisk) {
 			disks += '<small>' + thisDisk.Name + ": " + thisDisk.used.toFixed(1) + 'G / ' + thisDisk.total.toFixed(1) + 'G (' + thisDisk.pctFree.toFixed(1) + '%)</small><br/>';
 			if (diskTopUsage < thisDisk.pctFree) {
 				diskTopUsage = thisDisk.pctFree;
