@@ -1,125 +1,125 @@
 <head>
-    <script src="js/ext/jquery.min.js"></script>
-    <script src="js/ext/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="css/ext/jquery-ui.min.css" type="text/css" media="all" />
-    <script src="js/ext/bootstrap.min.js"></script>
-    <link href="css/ext/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <script src="js/zabbix_library.js"></script>
-    <script src="js/jquery.circleprogress.js"></script>
-    <style>
-        .nounderline{text-decoration: none !important}
-        body {
-            font-family: "BebasNeue";
-        }
-        /* This is for the jquery-circleprogress plugin */
-        .circle {
-            width: 100px;
-            margin: 6px 6px 20px;
-            display: inline-block;
-            position: relative;
-            text-align: center;
-            line-height: 1.2;
-        }
+	<script src="js/ext/jquery.min.js"></script>
+	<script src="js/ext/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="css/ext/jquery-ui.min.css" type="text/css" media="all" />
+	<script src="js/ext/bootstrap.min.js"></script>
+	<link href="css/ext/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+	<script src="js/zabbix_library.js"></script>
+	<script src="js/jquery.circleprogress.js"></script>
+	<style>
+		.nounderline{text-decoration: none !important}
+		body {
+			font-family: "BebasNeue";
+		}
+		/* This is for the jquery-circleprogress plugin */
+		.circle {
+			width: 100px;
+			margin: 6px 6px 20px;
+			display: inline-block;
+			position: relative;
+			text-align: center;
+			line-height: 1.2;
+		}
 
-        .circle canvas {
-            vertical-align: top;
-        }
+		.circle canvas {
+			vertical-align: top;
+		}
 
-        .circle strong {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            line-height: 40px;
-            font-size: 26px;
-        }
+		.circle strong {
+			position: absolute;
+			top: 20px;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			line-height: 40px;
+			font-size: 26px;
+		}
 
-        .circle strong i {
-            font-style: normal;
-            font-size: 0.6em;
-            font-weight: normal;
-        }
+		.circle strong i {
+			font-style: normal;
+			font-size: 0.6em;
+			font-weight: normal;
+		}
 
-        .circle span {
-            display: block;
-            color: #aaa;
-            margin-top: 12px;
-        }
+		.circle span {
+			display: block;
+			color: #aaa;
+			margin-top: 12px;
+		}
 
-        
-        
-        /* Left border for the server cells */
-        
-        .col-md-3 {
-            margin-left: 0;
-            padding-left: 19px;
-            border-left: 1px solid #555;
-        }
+		
+		
+		/* Left border for the server cells */
+		
+		.col-md-3 {
+			margin-left: 0;
+			padding-left: 19px;
+			border-left: 1px solid #555;
+		}
 
-        /* CSS animation for server alerts */
-        
-        .blink{
-            -webkit-animation: blink 700ms infinite alternate;
-            -moz-animation: blink 700ms infinite alternate;
-            -o-animation: blink 700ms infinite alternate;
-            animation: blink 700ms infinite alternate;
-            background-color: red;
-        }
-        @-webkit-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @-o-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @-moz-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        };
+		/* CSS animation for server alerts */
+		
+		.blink{
+			-webkit-animation: blink 700ms infinite alternate;
+			-moz-animation: blink 700ms infinite alternate;
+			-o-animation: blink 700ms infinite alternate;
+			animation: blink 700ms infinite alternate;
+			background-color: red;
+		}
+		@-webkit-keyframes blink {
+			from { background:rgba(255, 0, 0, 1); }
+			to { background:rgba(255, 0, 0, 0); }
+		}
+		@-o-keyframes blink {
+			from { background:rgba(255, 0, 0, 1); }
+			to { background:rgba(255, 0, 0, 0); }
+		}
+		@-moz-keyframes blink {
+			from { background:rgba(255, 0, 0, 1); }
+			to { background:rgba(255, 0, 0, 0); }
+		}
+		@keyframes blink {
+			from { background:rgba(255, 0, 0, 1); }
+			to { background:rgba(255, 0, 0, 0); }
+		};
 
 
 
-        .row{
-            overflow: hidden;
-        }
-    </style>
+		.row{
+			overflow: hidden;
+		}
+	</style>
 
-    <title>Zabbix Monitoring System</title>
+	<title>Zabbix Monitoring System</title>
 </head>
 
 <body>
-     <div class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <span style="float: right; font-size: 9px;">
-                        <a data-toggle="modal" data-target="#settings-modal">settings</a>
-                    </span>
-                </div>
-            </div>
-            
-        <!-- Populated by API call -->
-        <div id="hosts-list" class="row"></div>
+	 <div class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<span style="float: right; font-size: 9px;">
+						<a data-toggle="modal" data-target="#settings-modal">settings</a>
+					</span>
+				</div>
+			</div>
+			
+		<!-- Populated by API call -->
+		<div id="hosts-list" class="row"></div>
 
-        <div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="http://ebur.co">Eric Burgueño</a></div>
+		<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a> with some changes from <a href="http://ebur.co">Eric Burgueño</a></div>
 
 		<!-- Settings modal -->
 		<div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
-		    <div class="modal-dialog">
-			    <div class="modal-content">
-				    <div class="modal-header">
-					    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title" id="Settings">Settings</h4>
 					</div>
 					<div class="modal-body">
-					    <label for="network-dropdown"><input class="settings" type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label><br/>
+						<label for="network-dropdown"><input class="settings" type="checkbox" name="network-dropdown" id="network-dropdown" /> Show network statistics in a clickable dropdown</label><br/>
 						<label for="disks-dropdown"><input class="settings" type="checkbox" name="disks-dropdown" id="disks-dropdown" /> Show disk statistics in a clickable dropdown</label><br/>
 						<label for="show-meters"><input class="settings" type="checkbox" name="show-meters" id="show-meters" /> Display meter graphics for CPU and RAM usage (disable this for a more compact view)</label><br/>
 						<label for="view-list"><input type="radio" class="settings view-select" name="view-select" id="view-select-list" value="list" />List view</label>
@@ -129,7 +129,7 @@
 						
 					</div>
 					<div class="modal-footer">
-					    <button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
 					</div>
 				</div>
 			</div>
@@ -143,23 +143,23 @@
 var zabbix;
 $(document).ready(function() {
 
-    $('#view-select-grid').click(function() {
-        $('.view-grid-cols').attr('disabled', false);
-    });
-    $('#view-select-list').click(function() {
-        $('.view-grid-cols').attr('checked', false);
-        $('.view-grid-cols').attr('disabled', true);
-    });
-    $('.settings').click(function() {
-    	filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
-    });
-    
-    zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
-    if(zabbix.getApiVersion() >= '2.5.1') {
-        throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
-        //API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
-    }
-    zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
+	$('#view-select-grid').click(function() {
+		$('.view-grid-cols').attr('disabled', false);
+	});
+	$('#view-select-list').click(function() {
+		$('.view-grid-cols').attr('checked', false);
+		$('.view-grid-cols').attr('disabled', true);
+	});
+	$('.settings').click(function() {
+		filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
+	});
+	
+	zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
+	if(zabbix.getApiVersion() >= '2.5.1') {
+		throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
+		//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
+	}
+	zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
    var hosts = getHostsFromZabbix(zabbix);
    filterHostsAndOutput(hosts);
    
@@ -172,235 +172,235 @@ $(document).ready(function() {
 
 function getHostsFromZabbix(zabbix) {
 	return zabbix.call('host.get', {
-        "selectInventory": true,
-        "selectItems": [
-            "name",
-            "lastvalue",
-            "units",
-            "itemid",
-            "key_",
-            "lastclock",
-            "value_type",
-            "status",
-            "itemid"
-        ],//Next line is thanks to eburgueno, disabled unless you want to use it
-//        "groupids": "11", //Only display hosts in this groupID #.  You should create a new one with all the hosts you want, and templates
-        "output": "extend",
-        "search" : {"host" : ""},
+		"selectInventory": true,
+		"selectItems": [
+			"name",
+			"lastvalue",
+			"units",
+			"itemid",
+			"key_",
+			"lastclock",
+			"value_type",
+			"status",
+			"itemid"
+		],//Next line is thanks to eburgueno, disabled unless you want to use it
+//		"groupids": "11", //Only display hosts in this groupID #.  You should create a new one with all the hosts you want, and templates
+		"output": "extend",
+		"search" : {"host" : ""},
 	"sortfield" : "host",
-        "expandDescription": 1,
-        "expandData": 1
-    });
+		"expandDescription": 1,
+		"expandData": 1
+	});
 }
 
 //This process takes the hosts retrieved from the API call and creates the view on the webpage.
 function filterHostsAndOutput(hosts) {
-    var anError = 0;
-    var hostsCount = 0;
-    $('#hosts-list').empty();
-    $.each(hosts, function() { 
-        var thisHost = $(this); 
-        var thisHostObj = thisHost[0];
-        var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
-        var loadTotals = 0;
-        thisHostObj.agentPing = '';
+	var anError = 0;
+	var hostsCount = 0;
+	$('#hosts-list').empty();
+	$.each(hosts, function() { 
+		var thisHost = $(this); 
+		var thisHostObj = thisHost[0];
+		var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
+		var loadTotals = 0;
+		thisHostObj.agentPing = '';
 	thisHostObj.nameDiskSpaces = [];
-        thisHostObj.usedDiskSpacesPcts = [];
-        thisHostObj.totalDiskSpaces = [];
-        thisHostObj.usedDiskSpaces = [];
-        thisHostObj.totalMem = 0;
-        thisHostObj.freeMem = 0;
-        thisHostObj.numProcesses = 0;
-        thisHostObj.networkTraffic = 0;
-        $.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
-            switch ($(this)[0].key_) {
-                case 'system.cpu.num': //You may have to add this to your Zabbix templates.
-                    processorCount = $(this)[0].lastvalue;
-                    break;
-                case 'system.cpu.load': //You may have to add this to your Zabbix templates (as float)
-                    loadTotals += $(this)[0].lastvalue;
-                    break;
-                case 'agent.ping':
-                    thisHostObj.agentPing = $(this)[0].lastvalue;
-                    break;
-                case 'vm.memory.size[total]': //You may have to add these as well
-                   thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
-                    break;
-                case 'vm.memory.size[free]':
-                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached+inactive on linux, free on Windows
-                    break;
-                case 'vm.memory.size[cached]':
-                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
-                    break;
-                case 'vm.memory.size[inactive]':
-                    thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
-                    break;
-                case 'proc.num[]':
-                    thisHostObj.numProcesses = $(this)[0].lastvalue;
-                    break;
-                //as seen in http://stackoverflow.com/a/22099079 for case substring matching. There may be a better way to do this...
-                case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
+		thisHostObj.usedDiskSpacesPcts = [];
+		thisHostObj.totalDiskSpaces = [];
+		thisHostObj.usedDiskSpaces = [];
+		thisHostObj.totalMem = 0;
+		thisHostObj.freeMem = 0;
+		thisHostObj.numProcesses = 0;
+		thisHostObj.networkTraffic = 0;
+		$.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
+			switch ($(this)[0].key_) {
+				case 'system.cpu.num': //You may have to add this to your Zabbix templates.
+					processorCount = $(this)[0].lastvalue;
+					break;
+				case 'system.cpu.load': //You may have to add this to your Zabbix templates (as float)
+					loadTotals += $(this)[0].lastvalue;
+					break;
+				case 'agent.ping':
+					thisHostObj.agentPing = $(this)[0].lastvalue;
+					break;
+				case 'vm.memory.size[total]': //You may have to add these as well
+				   thisHostObj.totalMem = $(this)[0].lastvalue / 1073741824; //1024^3 => GB
+					break;
+				case 'vm.memory.size[free]':
+					thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824; //free(avail)=free+cached+inactive on linux, free on Windows
+					break;
+				case 'vm.memory.size[cached]':
+					thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
+					break;
+				case 'vm.memory.size[inactive]':
+					thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
+					break;
+				case 'proc.num[]':
+					thisHostObj.numProcesses = $(this)[0].lastvalue;
+					break;
+				//as seen in http://stackoverflow.com/a/22099079 for case substring matching. There may be a better way to do this...
+				case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
 					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(","));
 					if (jQuery.inArray(diskname, thisHostObj.nameDiskSpaces) == -1) { thisHostObj.nameDiskSpaces.push(diskname); }
-                    switch ($(this)[0].key_) {
-                        case ( ($(this)[0].key_.match(/,pfree/) )? $(this)[0].key_: undefined ):
-                            thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue);
-                            break;
-                        case ( ($(this)[0].key_.match(/,used/) )? $(this)[0].key_: undefined ):
-                            thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
-                            break;
-                        case ( ($(this)[0].key_.match(/,total/) )? $(this)[0].key_: undefined ):
-                            thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
-                            break;
-                       }
-                    break;
-                    
-                case ( ($(this)[0].key_.match(/net.if.in/) || $(this)[0].key_.match(/net.if.out/) ) ? $(this)[0].key_ : undefined ): //FIXME: filter by network interface
-                    thisHostObj.networkTraffic += $(this)[0].lastvalue / 8192; // KBps
-                    break;
-                case 'net.tcp.service[http]':
-                    //Shame we need a second API call, but using 'selectTriggers' in the host.get method doesn't return anything we can use to check the status of the trigger
-                    //See https://www.zabbix.com/forum/showthread.php?t=24137
-                    var webtrigger = zabbix.call('trigger.get', {
-                        "host": thisHostObj.name,
-                        "itemids": $(this)[0].itemid,
-                        });
-                    if(webtrigger[0] && webtrigger[0].status == 0 && webtrigger[0].value == 1) {
-                        thisHostObj.error = 1;
-                        thisHostObj.errorText = 'Web service is down (httpd or IIS)';
-                    }
-                    break;
-            }
-        });
+					switch ($(this)[0].key_) {
+						case ( ($(this)[0].key_.match(/,pfree/) )? $(this)[0].key_: undefined ):
+							thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue);
+							break;
+						case ( ($(this)[0].key_.match(/,used/) )? $(this)[0].key_: undefined ):
+							thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+							break;
+						case ( ($(this)[0].key_.match(/,total/) )? $(this)[0].key_: undefined ):
+							thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+							break;
+					   }
+					break;
+					
+				case ( ($(this)[0].key_.match(/net.if.in/) || $(this)[0].key_.match(/net.if.out/) ) ? $(this)[0].key_ : undefined ): //FIXME: filter by network interface
+					thisHostObj.networkTraffic += $(this)[0].lastvalue / 8192; // KBps
+					break;
+				case 'net.tcp.service[http]':
+					//Shame we need a second API call, but using 'selectTriggers' in the host.get method doesn't return anything we can use to check the status of the trigger
+					//See https://www.zabbix.com/forum/showthread.php?t=24137
+					var webtrigger = zabbix.call('trigger.get', {
+						"host": thisHostObj.name,
+						"itemids": $(this)[0].itemid,
+						});
+					if(webtrigger[0] && webtrigger[0].status == 0 && webtrigger[0].value == 1) {
+						thisHostObj.error = 1;
+						thisHostObj.errorText = 'Web service is down (httpd or IIS)';
+					}
+					break;
+			}
+		});
 
-        if (thisHostObj.error != '' && thisHostObj.error != 1) {
-            thisHostObj.errorText = new String;
-            thisHostObj.errorText = thisHostObj.error;
-        }
-        if(thisHostObj.errorText && thisHostObj.errorText.indexOf('Interrupted system call') > -1) {
-            thisHostObj.errorText = 'Couldn\'t reach agent - check firewall settings';
-        }
-        if(thisHostObj.errorText && thisHostObj.errorText.indexOf('Connection refused') > -1) {
-            thisHostObj.errorText = 'Connection refused - check agent settings';
-        }
-        if(thisHostObj.errorText && thisHostObj.errorText.indexOf('timed out') > -1) {
-            thisHostObj.errorText = 'Connection timed out - SERVER MAY BE DOWN';
-            anError = 1;
-        }
-        if(thisHostObj.inventory.os) {
-            if(thisHostObj.inventory.os.indexOf('Windows Server 2008 R2') > -1) {
-                thisHostObj.os = 'Win Server 2008 R2';
-            } else if (thisHostObj.inventory.os.indexOf('Windows Server 2012') > -1) {
-                thisHostObj.os = 'Win Server 2012';
-            } else if (thisHostObj.inventory.os.indexOf('Windows Server 2003') > -1) {
-                thisHostObj.os = 'Win Server 2003';
-            } else if (thisHostObj.inventory.os.indexOf('el7') > -1) {
-                thisHostObj.os = 'CentOS 7';
-            } else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
-                thisHostObj.os = 'CentOS 6.5';
-            } else if (thisHostObj.inventory.os.indexOf('Ubuntu') > -1) {//Ubuntu's uname -a does not give us the OS version
+		if (thisHostObj.error != '' && thisHostObj.error != 1) {
+			thisHostObj.errorText = new String;
+			thisHostObj.errorText = thisHostObj.error;
+		}
+		if(thisHostObj.errorText && thisHostObj.errorText.indexOf('Interrupted system call') > -1) {
+			thisHostObj.errorText = 'Couldn\'t reach agent - check firewall settings';
+		}
+		if(thisHostObj.errorText && thisHostObj.errorText.indexOf('Connection refused') > -1) {
+			thisHostObj.errorText = 'Connection refused - check agent settings';
+		}
+		if(thisHostObj.errorText && thisHostObj.errorText.indexOf('timed out') > -1) {
+			thisHostObj.errorText = 'Connection timed out - SERVER MAY BE DOWN';
+			anError = 1;
+		}
+		if(thisHostObj.inventory.os) {
+			if(thisHostObj.inventory.os.indexOf('Windows Server 2008 R2') > -1) {
+				thisHostObj.os = 'Win Server 2008 R2';
+			} else if (thisHostObj.inventory.os.indexOf('Windows Server 2012') > -1) {
+				thisHostObj.os = 'Win Server 2012';
+			} else if (thisHostObj.inventory.os.indexOf('Windows Server 2003') > -1) {
+				thisHostObj.os = 'Win Server 2003';
+			} else if (thisHostObj.inventory.os.indexOf('el7') > -1) {
+				thisHostObj.os = 'CentOS 7';
+			} else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
+				thisHostObj.os = 'CentOS 6.5';
+			} else if (thisHostObj.inventory.os.indexOf('Ubuntu') > -1) {//Ubuntu's uname -a does not give us the OS version
 		thisHostObj.os = 'Ubuntu';
-            } else if (thisHostObj.inventory.os.indexOf('Version 10') > -1) { //Does this conflict with any other OS?
+			} else if (thisHostObj.inventory.os.indexOf('Version 10') > -1) { //Does this conflict with any other OS?
 		thisHostObj.os = 'Mac OS 10.6';
-            } else if (thisHostObj.inventory.os.indexOf('Version 11') > -1) {
-            	thisHostObj.os = 'Mac OS 10.7';
-            } else if (thisHostObj.inventory.os.indexOf('Version 12') > -1) {
+			} else if (thisHostObj.inventory.os.indexOf('Version 11') > -1) {
+				thisHostObj.os = 'Mac OS 10.7';
+			} else if (thisHostObj.inventory.os.indexOf('Version 12') > -1) {
 		thisHostObj.os = 'Mac OS 10.8';
-            } else if (thisHostObj.inventory.os.indexOf('Version 13') > -1) {
+			} else if (thisHostObj.inventory.os.indexOf('Version 13') > -1) {
 		thisHostObj.os = 'Mac OS 10.9';
-            } else if (thisHostObj.inventory.os.indexOf('Version 14') > -1) {
+			} else if (thisHostObj.inventory.os.indexOf('Version 14') > -1) {
 		thisHostObj.os = 'Mac OS 10.10';
-            } else if (thisHostObj.inventory.os.indexOf('Version 15') > -1) {
+			} else if (thisHostObj.inventory.os.indexOf('Version 15') > -1) {
 		thisHostObj.os = 'Mac OS 10.11'; //Even though it doesn't exist yet....
-                //Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
-            } else if (thisHostObj.inventory.os.indexOf('Linux') > -1) {
-            	thisHostObj.os = 'Linux';
-            } else {
-                //Return the unfriendly string if no patterns were matched
-                thisHostObj.os = thisHost[0].inventory.os;
-            }
-        } else if (thisHostObj.inventory.os_full) { //Per eburgueno, his install uses an item for Hostname to populate OS (Full Details) in Inventory
-                if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
-            thisHostObj.os = 'Linux';
-        }
-        } else {
-            thisHostObj.os = 'OS Unavailable';
-        }
-        //Math
-        thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
-        thisHostObj.avgCpuLoad = loadTotals / processorCount;
-        thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
-        var disks = new String;
-        var diskTopUsage = 0;
-        $.each(thisHostObj.totalDiskSpaces, function(key, value) {
-            disks += '<small>' + thisHostObj.nameDiskSpaces[key] + ": " + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
-            if (diskTopUsage < thisHostObj.usedDiskSpacesPcts[key]) {
-                diskTopUsage = thisHostObj.usedDiskSpacesPcts[key];
-            }
-        });
-        var diskUsageClass = new String;
-        if (diskTopUsage && diskTopUsage > 90) {
-            diskUsageClass = 'panel-danger';
-        } else if (diskTopUsage && diskTopUsage > 75) {
-            diskUsageClass = 'panel-warning';
-        } else {
-            diskUsageClass = 'panel-default';
-        }
-        //TODO Move this outside of the loop; it should only be set once.
-        
+				//Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
+			} else if (thisHostObj.inventory.os.indexOf('Linux') > -1) {
+				thisHostObj.os = 'Linux';
+			} else {
+				//Return the unfriendly string if no patterns were matched
+				thisHostObj.os = thisHost[0].inventory.os;
+			}
+		} else if (thisHostObj.inventory.os_full) { //Per eburgueno, his install uses an item for Hostname to populate OS (Full Details) in Inventory
+				if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
+			thisHostObj.os = 'Linux';
+		}
+		} else {
+			thisHostObj.os = 'OS Unavailable';
+		}
+		//Math
+		thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
+		thisHostObj.avgCpuLoad = loadTotals / processorCount;
+		thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
+		var disks = new String;
+		var diskTopUsage = 0;
+		$.each(thisHostObj.totalDiskSpaces, function(key, value) {
+			disks += '<small>' + thisHostObj.nameDiskSpaces[key] + ": " + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
+			if (diskTopUsage < thisHostObj.usedDiskSpacesPcts[key]) {
+				diskTopUsage = thisHostObj.usedDiskSpacesPcts[key];
+			}
+		});
+		var diskUsageClass = new String;
+		if (diskTopUsage && diskTopUsage > 90) {
+			diskUsageClass = 'panel-danger';
+		} else if (diskTopUsage && diskTopUsage > 75) {
+			diskUsageClass = 'panel-warning';
+		} else {
+			diskUsageClass = 'panel-default';
+		}
+		//TODO Move this outside of the loop; it should only be set once.
+		
 	if($("input:radio[name=view-grid-cols]:checked").val()) {
-            columnWidth = $('input:radio[name=view-grid-cols]:checked').val(); //If a value has been selected for the grid view
-        } else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
-            columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
-        }
-        //TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
-        hostsCount++;
-        
-        if(!thisHostObj.error) {
-            //Build the server entry.
-            $('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
-            '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
-            thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
-            ' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
-            '"><strong></strong><span>USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
-            thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
-            thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
-            'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
-            '</div></div></div></div></span></div></div></div>');
-        } else {
-            $('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
-                thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
-        }
+			columnWidth = $('input:radio[name=view-grid-cols]:checked').val(); //If a value has been selected for the grid view
+		} else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
+			columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
+		}
+		//TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
+		hostsCount++;
+		
+		if(!thisHostObj.error) {
+			//Build the server entry.
+			$('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
+			'"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
+			thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
+			' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
+			'"><strong></strong><span>USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
+			thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
+			thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
+			'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
+			'</div></div></div></div></span></div></div></div>');
+		} else {
+			$('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
+				thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
+		}
 
 
 
 
-    });
-    //Play the tornado siren if a server is unreachable
-    if(anError === 1) { //We do this outside the for loop because we only want the sound to play...once.
-        var times = 3;
-        function repeat() {
-            times--;
-            if (times === 0) {
-                clearInterval(loop);
-            }
-            var audio = document.createElement("audio");
-            audio.src = "audio/tornado2.ogg";
-            audio.play();
-        }
-        var loop = setInterval(repeat, 6000);
-        repeat();
-    }
+	});
+	//Play the tornado siren if a server is unreachable
+	if(anError === 1) { //We do this outside the for loop because we only want the sound to play...once.
+		var times = 3;
+		function repeat() {
+			times--;
+			if (times === 0) {
+				clearInterval(loop);
+			}
+			var audio = document.createElement("audio");
+			audio.src = "audio/tornado2.ogg";
+			audio.play();
+		}
+		var loop = setInterval(repeat, 6000);
+		repeat();
+	}
 
-    $('.circle').each(function() {
-        $(this).circleProgress({
-            value: $(this).attr('data-pct'),
-            fill: {gradient: ['#1EB33C', '#F72323']},
-            thickness: 15
-        }).on('circle-animation-progress', function (event, progress, stepValue) {
-            $(this).find('strong').html(String((100 * stepValue).toFixed(1)) + '<i>%</i>');
-        });
-    });
+	$('.circle').each(function() {
+		$(this).circleProgress({
+			value: $(this).attr('data-pct'),
+			fill: {gradient: ['#1EB33C', '#F72323']},
+			thickness: 15
+		}).on('circle-animation-progress', function (event, progress, stepValue) {
+			$(this).find('strong').html(String((100 * stepValue).toFixed(1)) + '<i>%</i>');
+		});
+	});
 
 
 }
