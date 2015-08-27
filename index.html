@@ -204,6 +204,7 @@ function findIndexOfObjectWithAttributeInArray(array, attr, value) {
             return i;
         }
     }
+    return false;
 }
 //This process takes the hosts retrieved from the API call and creates the view on the webpage.
 function filterHostsAndOutput(hosts) {
@@ -215,7 +216,7 @@ function filterHostsAndOutput(hosts) {
 		var thisHostObj = thisHost[0];
 		var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
 		var loadTotals = 0;
-		var name_index = undefined;
+		var name_index = false;
 		thisHostObj.agentPing = '';
 	thisHostObj.nameDiskSpaces = [];
 		thisHostObj.usedDiskSpacesPcts = [];
@@ -255,7 +256,7 @@ function filterHostsAndOutput(hosts) {
 				case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
 					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(",")); //12 is where the name of the disk starts
 					name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
-					if (name_index === undefined) {
+					if (name_index === false) {
 						thisHostObj.Disks.push(new Disk(diskname));
 						name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
 					}
