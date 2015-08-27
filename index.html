@@ -218,14 +218,11 @@ function filterHostsAndOutput(hosts) {
 		var loadTotals = 0;
 		var name_index = false;
 		thisHostObj.agentPing = '';
-	thisHostObj.nameDiskSpaces = [];
-		thisHostObj.usedDiskSpacesPcts = [];
-		thisHostObj.totalDiskSpaces = [];
-		thisHostObj.usedDiskSpaces = [];
 		thisHostObj.totalMem = 0;
 		thisHostObj.freeMem = 0;
 		thisHostObj.numProcesses = 0;
 		thisHostObj.networkTraffic = 0;
+		thisHostObj.Disks = [];
 		$.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
 			switch ($(this)[0].key_) {
 				case 'system.cpu.num': //You may have to add this to your Zabbix templates.
