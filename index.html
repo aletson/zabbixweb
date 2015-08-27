@@ -204,9 +204,10 @@ function filterHostsAndOutput(hosts) {
         var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
         var loadTotals = 0;
         thisHostObj.agentPing = '';
-        thisHostObj.usedDiskSpacesPcts = new Array;
-        thisHostObj.totalDiskSpaces = new Array;
-        thisHostObj.usedDiskSpaces = new Array;
+		thisHostObj.nameDiskSpaces = [];
+        thisHostObj.usedDiskSpacesPcts = [];
+        thisHostObj.totalDiskSpaces = [];
+        thisHostObj.usedDiskSpaces = [];
         thisHostObj.totalMem = 0;
         thisHostObj.freeMem = 0;
         thisHostObj.numProcesses = 0;
@@ -239,6 +240,8 @@ function filterHostsAndOutput(hosts) {
                     break;
                 //as seen in http://stackoverflow.com/a/22099079 for case substring matching. There may be a better way to do this...
                 case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
+					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(","));
+					if (jQuery.inArray(diskname, thisHostObj.nameDiskSpaces) == -1) { thisHostObj.nameDiskSpaces.push(diskname); }
                     switch ($(this)[0].key_) {
                         case ( ($(this)[0].key_.match(/,pfree/) )? $(this)[0].key_: undefined ):
                             thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue);
@@ -330,7 +333,7 @@ function filterHostsAndOutput(hosts) {
         var disks = new String;
         var diskTopUsage = 0;
         $.each(thisHostObj.totalDiskSpaces, function(key, value) {
-            disks += '<small>' + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
+            disks += '<small>' + thisHostObj.nameDiskSpaces[key] + ": " + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
             if (diskTopUsage < thisHostObj.usedDiskSpacesPcts[key]) {
                 diskTopUsage = thisHostObj.usedDiskSpacesPcts[key];
             }
