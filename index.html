@@ -256,7 +256,7 @@ function filterHostsAndOutput(hosts) {
 					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(",")); //12 is where the name of the disk starts
 					name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
 					if (name_index === undefined) {
-						thisHostObj.Disks[] = new Disk(diskname);
+						thisHostObj.Disks.push(new Disk(diskname));
 						name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
 					}
 					
