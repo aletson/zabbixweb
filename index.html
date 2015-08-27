@@ -192,7 +192,19 @@ function getHostsFromZabbix(zabbix) {
 		"expandData": 1
 	});
 }
-
+function Disk(Name, pctFree, used, total) {
+	this.Name = Name;
+	this.pctFree = pctFree;
+	this.used = used;
+	this.total = total;
+}
+function findIndexOfObjectWithAttributeInArray(array, attr, value) {
+    for(var i = 0; i < array.length; i += 1) {
+        if(array[i][attr] === value) {
+            return i;
+        }
+    }
+}
 //This process takes the hosts retrieved from the API call and creates the view on the webpage.
 function filterHostsAndOutput(hosts) {
 	var anError = 0;
@@ -203,6 +215,7 @@ function filterHostsAndOutput(hosts) {
 		var thisHostObj = thisHost[0];
 		var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
 		var loadTotals = 0;
+		var name_index = undefined;
 		thisHostObj.agentPing = '';
 	thisHostObj.nameDiskSpaces = [];
 		thisHostObj.usedDiskSpacesPcts = [];
@@ -240,17 +253,22 @@ function filterHostsAndOutput(hosts) {
 					break;
 				//as seen in http://stackoverflow.com/a/22099079 for case substring matching. There may be a better way to do this...
 				case ( ($(this)[0].key_.match(/vfs.fs.size/) )? $(this)[0].key_: undefined ):
-					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(","));
-					if (jQuery.inArray(diskname, thisHostObj.nameDiskSpaces) == -1) { thisHostObj.nameDiskSpaces.push(diskname); }
+					diskname = $(this)[0].key_.substring(12,$(this)[0].key_.indexOf(",")); //12 is where the name of the disk starts
+					name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
+					if (name_index === undefined) {
+						thisHostObj.Disks[] = new Disk(diskname);
+						name_index = findIndexOfObjectWithAttributeInArray(thisHostObj.Disks, 'Name', diskname);
+					}
+					
 					switch ($(this)[0].key_) {
 						case ( ($(this)[0].key_.match(/,pfree/) )? $(this)[0].key_: undefined ):
-							thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue);
+							thisHostObj.Disks[name_index].pctFree = 100 - $(this[0].lastvalue);
 							break;
 						case ( ($(this)[0].key_.match(/,used/) )? $(this)[0].key_: undefined ):
-							thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+							thisHostObj.Disks[name_index].used = $(this)[0].lastvalue / 1073741824;
 							break;
 						case ( ($(this)[0].key_.match(/,total/) )? $(this)[0].key_: undefined ):
-							thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1073741824));
+							thisHostObj.Disks[name_index].total = $(this)[0].lastvalue / 1073741824;
 							break;
 					   }
 					break;
@@ -332,10 +350,10 @@ function filterHostsAndOutput(hosts) {
 		thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
 		var disks = new String;
 		var diskTopUsage = 0;
-		$.each(thisHostObj.totalDiskSpaces, function(key, value) {
-			disks += '<small>' + thisHostObj.nameDiskSpaces[key] + ": " + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
-			if (diskTopUsage < thisHostObj.usedDiskSpacesPcts[key]) {
-				diskTopUsage = thisHostObj.usedDiskSpacesPcts[key];
+		$.each(thisHostObj.Disks, function(thisDisk) {
+			disks += '<small>' + thisDisk.Name + ": " + thisDisk.used.toFixed(1) + 'G / ' + thisDisk.total.toFixed(1) + 'G (' + thisDisk.pctFree.toFixed(1) + '%)</small><br/>';
+			if (diskTopUsage < thisDisk.pctFree) {
+				diskTopUsage = thisDisk.pctFree;
 			}
 		});
 		var diskUsageClass = new String;
