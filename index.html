@@ -172,6 +172,7 @@ $(document).ready(function() {
 
 function getHostsFromZabbix(zabbix) {
 	return zabbix.call('host.get', {
+		//"monitored_hosts": true,  //Only display hosts that are enabled. status=enabled
 		"selectInventory": true,
 		"selectItems": [
 			"name",
