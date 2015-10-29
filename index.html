@@ -154,7 +154,6 @@ $(document).ready(function() {
 		filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
 	});
 	
-	zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
 	if(zabbix.getApiVersion() >= '2.5.1') {
 		throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
 		//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -211,6 +210,13 @@ function findIndexOfObjectWithAttributeInArray(array, attr, value) {
 function filterHostsAndOutput(hosts) {
 	var anError = 0;
 	var hostsCount = 0;
+
+		if($("input:radio[name=view-grid-cols]:checked").val()) {
+			columnWidth = $('input:radio[name=view-grid-cols]:checked').val(); //If a value has been selected for the grid view
+		} else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
+			columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
+		}
+
 	$('#hosts-list').empty();
 	$.each(hosts, function() { 
 		var thisHost = $(this); 
@@ -370,6 +376,7 @@ function filterHostsAndOutput(hosts) {
 		} else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
 			columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
 		}
+
 		//TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
 		hostsCount++;
 		
