@@ -165,7 +165,7 @@
 	   filterHostsAndOutput(hosts);
 	   
 	   //TODO fix this. If the next API call starts before the last one finishes, the dashboard explodes and it's not pretty.
-	   setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 5000);
+	   setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 30000);
 	
 	});
 	
