@@ -141,6 +141,7 @@
 	</div>
 	<script>
 	var zabbix;
+	var usedHosts = [];
 	$(document).ready(function() {
 	
 		$('#view-select-grid').click(function() {
@@ -151,10 +152,10 @@
 			$('.view-grid-cols').attr('disabled', true);
 		});
 		$('.settings').click(function() {
-			filterHostsAndOutput(hosts); //Any settings change should trigger a redraw.
+			filterHostsAndOutput(hosts, 1); //Any settings change should trigger a redraw.
 		});
 		
-		zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
+		zabbix = new $.zabbix ('http://zabbix.com/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
 		if(zabbix.getApiVersion() >= '2.5.1') {
 			throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
 			//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
@@ -164,7 +165,7 @@
 	   filterHostsAndOutput(hosts);
 	   
 	   //TODO fix this. If the next API call starts before the last one finishes, the dashboard explodes and it's not pretty.
-	   setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 54000);
+	   setInterval(function() { var hosts = getHostsFromZabbix(zabbix); filterHostsAndOutput(hosts); }, 5000);
 	
 	});
 	
@@ -208,7 +209,10 @@
 	    return false;
 	}
 	//This process takes the hosts retrieved from the API call and creates the view on the webpage.
-	function filterHostsAndOutput(hosts) {
+	function filterHostsAndOutput(hosts, redraw) {
+		if (typeof(redraw)==='undefined') {
+			redraw = 0;
+		}
 		var anError = 0;
 		var hostsCount = 0;
 		
@@ -217,8 +221,13 @@
 		} else if ($('input:radio[name=view-select]:checked').val() == 'grid') {
 			columnWidth = 3; //If the grid view is selected but no value has been assigned for view-grid-cols
 		}
+		if(redraw == 1) {
+			$('#hosts-list').empty();
+			usedHosts = [];
+		}
 		
-		$('#hosts-list').empty();
+		//$('#hosts-list').empty();
+		var existingHosts = [];
 		$.each(hosts, function() { 
 			var thisHost = $(this); 
 			var thisHostObj = thisHost[0];
@@ -373,27 +382,60 @@
 			
 			//TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
 			hostsCount++;
-			
-			if(!thisHostObj.error) {
-				//Build the server entry.
-				$('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
-				'"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
-				thisHostObj.avgCpuLoad + '"><strong></strong><span>' + thisHostObj.numProcesses +
-				' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
-				'"><strong></strong><span>USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
-				thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
-				thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
-				'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
-				'</div></div></div></div></span></div></div></div>');
+			if ($.inArray(thisHostObj.hostid, usedHosts) !== -1) {
+				$("#" + thisHostObj.hostid).find(".cpu-circle").circleProgress('value', thisHostObj.avgCpuLoad);
+				$("#" + thisHostObj.hostid).find(".mem-circle").circleProgress('value', thisHostObj.memPct);
+				$("#" + thisHostObj.hostid).find(".process-count").text(thisHostObj.numProcesses + " PROCS");
+				$("#" + thisHostObj.hostid).find(".mem-count").text('USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' + thisHostObj.totalMem.toFixed(1) + 'G');
+				$("#" + thisHostObj.hostid).find(".nw-stats").html('PING: ' + thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) + 'KBps');
+				$("#" + thisHostObj.hostid).find(".disk-stats-panel").html(disks);
 			} else {
-				$('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
-					thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
+				//Host is not in the grid, append a new entry.
+				usedHosts.push(thisHostObj.hostid);
+				if(!thisHostObj.error) {
+					//Build the server entry.
+					$('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
+					'"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle cpu-circle" data-pct="' +
+					thisHostObj.avgCpuLoad + '"><strong></strong><span class="process-count">' + thisHostObj.numProcesses +
+					' PROCS</span></span><div class="pull-right"><span class="circle mem-circle" data-pct="' + thisHostObj.memPct +
+					'"><strong></strong><span class="mem-count">USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
+					thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6 nw-stats">PING: ' +
+					thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
+					'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + 
+					diskUsageClass + ' disks-display"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' +
+					thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body disk-stats-panel">' + disks +
+					'</div></div></div></div></span></div></div></div>');
+					
+					$('#' + thisHostObj.hostid).find('.circle').each(function() {
+						$(this).circleProgress({
+							value: $(this).attr('data-pct'),
+							fill: {gradient: ['#1EB33C', '#F72323']},
+							thickness: 15
+						}).on('circle-animation-progress', function (event, progress, stepValue) {
+							$(this).find('strong').html(String((100 * stepValue).toFixed(1)) + '<i>%</i>');
+						});
+					});
+				} else {
+					$('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
+						thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
+				}
+			}
+			if($.inArray(thisHostObj.hostid, existingHosts) === -1) {
+				existingHosts.push(thisHostObj.hostid);
 			}
 	
 	
 	
 	
 		});
+		//Remove hosts that Zabbix is no longer reporting.
+		$.each(hosts, function() {
+			if($.inArray($(this)[0].hostid, existingHosts) === -1) {
+				$('#' + $(this)[0].hostid).remove();
+				usedHosts.splice($.inArray($(this)[0].hostid, usedHosts), 1);
+			}
+		});
+		
 		//Play the tornado siren if a server is unreachable
 		if(anError === 1) { //We do this outside the for loop because we only want the sound to play...once.
 			var times = 3;
@@ -410,15 +452,7 @@
 			repeat();
 		}
 	
-		$('.circle').each(function() {
-			$(this).circleProgress({
-				value: $(this).attr('data-pct'),
-				fill: {gradient: ['#1EB33C', '#F72323']},
-				thickness: 15
-			}).on('circle-animation-progress', function (event, progress, stepValue) {
-				$(this).find('strong').html(String((100 * stepValue).toFixed(1)) + '<i>%</i>');
-			});
-		});
+		
 	
 	
 	}
