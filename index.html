@@ -155,10 +155,11 @@
 			filterHostsAndOutput(hosts, 1); //Any settings change should trigger a redraw.
 		});
 		
-		zabbix = new $.zabbix ('http://zabbix.com/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
-		if(zabbix.getApiVersion() >= '2.5.1') {
+		zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
+		if(zabbix.getApiVersion() >= '3.0.1') {
+			console.log(zabbix.getApiVersion());
 			throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
-			//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 2.5 (unreleased, used by zabbix.org/zabbix) version
+			//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 3.0 versions.
 		}
 		zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
 	   var hosts = getHostsFromZabbix(zabbix);
@@ -382,14 +383,14 @@
 			
 			//TODO Check hostsCount % columnWidth to add <div class="row"></div> surrounding each row for better layout.
 			hostsCount++;
-			if ($.inArray(thisHostObj.hostid, usedHosts) !== -1) {
+			if ($.inArray(thisHostObj.hostid, usedHosts) !== -1 && !$("#" + thisHostObj.hostid).hasClass("blink")) {
 				$("#" + thisHostObj.hostid).find(".cpu-circle").circleProgress('value', thisHostObj.avgCpuLoad);
 				$("#" + thisHostObj.hostid).find(".mem-circle").circleProgress('value', thisHostObj.memPct);
 				$("#" + thisHostObj.hostid).find(".process-count").text(thisHostObj.numProcesses + " PROCS");
 				$("#" + thisHostObj.hostid).find(".mem-count").text('USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' + thisHostObj.totalMem.toFixed(1) + 'G');
 				$("#" + thisHostObj.hostid).find(".nw-stats").html('PING: ' + thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) + 'KBps');
 				$("#" + thisHostObj.hostid).find(".disk-stats-panel").html(disks);
-			} else {
+			} else if (!$("#" + thisHostObj.hostid).length) {
 				//Host is not in the grid, append a new entry.
 				usedHosts.push(thisHostObj.hostid);
 				if(!thisHostObj.error) {
@@ -419,6 +420,18 @@
 					$('#hosts-list').append('<div class="col-md-' + columnWidth + ' blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
 						thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
 				}
+			} else {
+				//Host exists but has an error. Add data.
+				$("#" + thisHostObj.hostid).html('<h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle cpu-circle" data-pct="' +
+					thisHostObj.avgCpuLoad + '"><strong></strong><span class="process-count">' + thisHostObj.numProcesses +
+					' PROCS</span></span><div class="pull-right"><span class="circle mem-circle" data-pct="' + thisHostObj.memPct +
+					'"><strong></strong><span class="mem-count">USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
+					thisHostObj.totalMem.toFixed(1) + 'G' + '</span></span></div><br/><div class="row"><div class="col-md-6 nw-stats">PING: ' +
+					thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
+					'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' +
+					diskUsageClass + ' disks-display"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' +
+					thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body disk-stats-panel">' + disks +
+					'</div></div></div></div></span></div></div>').removeClass("blink");			
 			}
 			if($.inArray(thisHostObj.hostid, existingHosts) === -1) {
 				existingHosts.push(thisHostObj.hostid);
