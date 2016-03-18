@@ -36,7 +36,7 @@
 			width: 100%;
 			text-align: center;
 			line-height: 40px;
-			font-size: 26px;
+			font-size: 20px;
 		}
 
 		.circle strong i {
@@ -237,10 +237,12 @@
 			var thisHostObj = thisHost[0];
 			var processorCount = 1; //default to one CPU (or thread) in case system.cpu.num is not being gathered for the host
 			var loadTotals = 0;
+			var loadUtil = 0;
 			var name_index = false;
 			thisHostObj.agentPing = '';
 			thisHostObj.totalMem = 0;
 			thisHostObj.freeMem = 0;
+			thisHostObj.usedMem = 0;
 			thisHostObj.numProcesses = 0;
 			thisHostObj.networkTraffic = 0;
 			thisHostObj.Disks = [];
@@ -248,6 +250,9 @@
 				switch ($(this)[0].key_) {
 					case 'system.cpu.num': //You may have to add this to your Zabbix templates.
 						processorCount = $(this)[0].lastvalue;
+						break;
+					case 'system.cpu.util': //You may have to add this to your Zabbix templates (as float)
+						loadUtil = $(this)[0].lastvalue;
 						break;
 					case 'system.cpu.load': //You may have to add this to your Zabbix templates (as float)
 						loadTotals += $(this)[0].lastvalue;
@@ -266,6 +271,9 @@
 						break;
 					case 'vm.memory.size[inactive]':
 						thisHostObj.freeMem += $(this)[0].lastvalue / 1073741824;
+						break;
+					case 'vm.memory.size[used]': //This fixes used memory display showing the correct numbers
+						thisHostObj.usedMem = $(this)[0].lastvalue / 1073741824;
 						break;
 					case 'proc.num[]':
 						thisHostObj.numProcesses = $(this)[0].lastvalue;
@@ -364,13 +372,12 @@
 				thisHostObj.os = 'OS Unavailable';
 			}
 			//Math
-			thisHostObj.usedMem = thisHostObj.totalMem - thisHostObj.freeMem;
-			thisHostObj.avgCpuLoad = loadTotals / processorCount;
-			thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem;
+			thisHostObj.avgCpuLoad = loadUtil;
+			thisHostObj.memPct = thisHostObj.usedMem / thisHostObj.totalMem; //Had to make changes here to use thisHostObj.usedMem and invert the division to show positive numbers
 			var disks = new String;
 			var diskTopUsage = 0;
 			$.each(thisHostObj.Disks, function(i, thisDisk) {
-				disks += '<small>' + thisDisk.Name + ": " + thisDisk.used.toFixed(1) + 'G / ' + thisDisk.total.toFixed(1) + 'G (' + thisDisk.pctFree.toFixed(1) + '%)</small><br/>';
+				disks += '<small>' + thisDisk.Name + " " + thisDisk.used.toFixed(1) + 'G / ' + thisDisk.total.toFixed(1) + 'G (' + thisDisk.pctFree.toFixed(1) + '%)</small><br/>';
 				if (diskTopUsage < thisDisk.pctFree) {
 					diskTopUsage = thisDisk.pctFree;
 				}
@@ -399,7 +406,7 @@
 				if(!thisHostObj.error) {
 					//Build the server entry.
 					$('#hosts-list').append('<div class="col-md-' + columnWidth + '" id="' + thisHostObj.hostid +
-					'"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle cpu-circle" data-pct="' +
+					'"><h5 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h5><span class="circle cpu-circle" data-pct="' +
 					thisHostObj.avgCpuLoad + '"><strong></strong><span class="process-count">' + thisHostObj.numProcesses +
 					' PROCS</span></span><div class="pull-right"><span class="circle mem-circle" data-pct="' + thisHostObj.memPct +
 					'"><strong></strong><span class="mem-count">USED: ' + thisHostObj.usedMem.toFixed(1) + 'G / ' +
