@@ -159,11 +159,6 @@
 		});
 		
 		zabbix = new $.zabbix ('http://zabbix.org/zabbix/api_jsonrpc.php', 'guest', ''); //Change zabbix.org to your server's IP, guest to a Zabbix user and the blank to the password
-		if(zabbix.getApiVersion() >= '3.0.1') {
-			console.log(zabbix.getApiVersion());
-			throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
-			//API changes can be problematic. The current code seems to work well with 2.2, 2.4 and 3.0 versions.
-		}
 		zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
 	   var hosts = getHostsFromZabbix(zabbix);
 	   filterHostsAndOutput(hosts);
