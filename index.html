@@ -334,24 +334,28 @@
 					thisHostObj.os = 'Win Server 2012';
 				} else if (thisHostObj.inventory.os.indexOf('Windows Server 2003') > -1) {
 					thisHostObj.os = 'Win Server 2003';
+				} else if (thisHostObj.inventory.os.indexOf('Server 2016') > -1) {
+					thisHostObj.os = 'Win Server 2016';
+				} else if (thisHostObj.inventory.os.indexOf('Windows') > -1) {
+					thisHostObj.os = 'Windows (other)';
 				} else if (thisHostObj.inventory.os.indexOf('el7') > -1) {
 					thisHostObj.os = 'CentOS 7';
 				} else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
 					thisHostObj.os = 'CentOS 6.5';
 				} else if (thisHostObj.inventory.os.indexOf('Ubuntu') > -1) {//Ubuntu's uname -a does not give us the OS version
-			thisHostObj.os = 'Ubuntu';
+					thisHostObj.os = 'Ubuntu';
 				} else if (thisHostObj.inventory.os.indexOf('Version 10') > -1) { //Does this conflict with any other OS?
-			thisHostObj.os = 'Mac OS 10.6';
+					thisHostObj.os = 'Mac OS 10.6';
 				} else if (thisHostObj.inventory.os.indexOf('Version 11') > -1) {
 					thisHostObj.os = 'Mac OS 10.7';
 				} else if (thisHostObj.inventory.os.indexOf('Version 12') > -1) {
-			thisHostObj.os = 'Mac OS 10.8';
+					thisHostObj.os = 'Mac OS 10.8';
 				} else if (thisHostObj.inventory.os.indexOf('Version 13') > -1) {
-			thisHostObj.os = 'Mac OS 10.9';
+					thisHostObj.os = 'Mac OS 10.9';
 				} else if (thisHostObj.inventory.os.indexOf('Version 14') > -1) {
-			thisHostObj.os = 'Mac OS 10.10';
+					thisHostObj.os = 'Mac OS 10.10';
 				} else if (thisHostObj.inventory.os.indexOf('Version 15') > -1) {
-			thisHostObj.os = 'Mac OS 10.11'; //Even though it doesn't exist yet....
+					thisHostObj.os = 'Mac OS 10.11';
 					//Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
 				} else if (thisHostObj.inventory.os.indexOf('Linux') > -1) {
 					thisHostObj.os = 'Linux';
@@ -360,9 +364,11 @@
 					thisHostObj.os = thisHost[0].inventory.os;
 				}
 			} else if (thisHostObj.inventory.os_full) { //Per eburgueno, his install uses an item for Hostname to populate OS (Full Details) in Inventory
-					if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
-				thisHostObj.os = 'Linux';
-			}
+				if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
+					thisHostObj.os = 'Linux';
+				}
+			} else if (thisHostObj.inventory.system.uname) {
+				thisHostObj.os = thisHostObj.inventory.system.uname;
 			} else {
 				thisHostObj.os = 'OS Unavailable';
 			}
