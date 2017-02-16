@@ -30,17 +30,10 @@
         this.authenticate = function() {
             this.rpcid = 0;
             var self = this;
-			if(self.apiversion >= '2.4') {
-				var authID = this.call('user.login', {
-					'user': this.user,
-					'password' : this.password
-				});
-			} else {
-				var authID = this.call('user.authenticate', {
-					'user': this.user,
-					'password' : this.password
-				});
-			}
+			var authID = this.call('user.authenticate', {
+				'user': this.user,
+				'password' : this.password
+			});
             self.authid = authID;
         };
 
