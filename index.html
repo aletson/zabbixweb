@@ -367,7 +367,7 @@
 				if(thisHostObj.inventory.os_full.indexOf('Linux') > -1) {
 					thisHostObj.os = 'Linux';
 				}
-			} else if (thisHostObj.inventory.system.uname) {
+			} else if (thisHostObj.inventory.system && thisHostObj.inventory.system.uname) {
 				thisHostObj.os = thisHostObj.inventory.system.uname;
 			} else {
 				thisHostObj.os = 'OS Unavailable';
