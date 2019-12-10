@@ -5,7 +5,7 @@ A frontend monitoring board for Zabbix server.
 
 This is a GUI dashboard for Zabbix hosts. It will list the hostname, OS, Load ÷ CPU cores, number of processes, memory usage, ping, traffic on the default interface, and disk usage.
 
-Screenshots can be found on the [original blog post](https://letson.me/building-better-zabbix-frontend/).
+Screenshots can be found on the [original blog post](https://ajl.io/building-better-zabbix-frontend/).
 
 Installation
 ------------
