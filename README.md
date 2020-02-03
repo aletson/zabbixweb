@@ -1,6 +1,11 @@
 zabbixweb
 =========
 
+This software is no longer maintained by me. As far as I'm aware there's no fork where development is being continued actively. Sorry!
+
+Overview
+--------
+
 A frontend monitoring board for Zabbix server.
 
 This is a GUI dashboard for Zabbix hosts. It will list the hostname, OS, Load ÷ CPU cores, number of processes, memory usage, ping, traffic on the default interface, and disk usage.
